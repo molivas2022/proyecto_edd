@@ -19,14 +19,34 @@ string decompress_string(vector<pair<int, int>> input);
 pair<string, int> longest_repeated_ocurrence(string search, string look);
 
 /* -- Funciones de depuración -- */
+/* Recorta el tamaño de un archivo de texto a un tamaño deseado (en bytes) */
+void cut_file(int size, const char* input_filename, const char* output_filename);
 /* Imprime los pares indice-longitud de una compresión */
 void print_code(vector<pair<int, int>> code);
 
 int main() {
-    compress_file("sample.txt", "sample_compressed.txt");
+    cut_file(1048576, "sample.txt", "sample_cut.txt"); /* 1048576 bytes = 1 mB */
+    compress_file("sample_cut.txt", "sample_compressed.txt");
     decompress_file("sample_compressed.txt", "sample_decompressed.txt");
-    /* Notar que sample.txt y sample_decompressed.txt son identicos */
+    /* Notar que sample_cut.txt y sample_decompressed.txt son identicos */
     return 0;
+}
+
+void cut_file(int size, const char* input_filename, const char* output_filename) {
+    ifstream input{input_filename};
+    ofstream output{output_filename};
+
+    int i = 0;
+    char c;
+    while (i < size) {
+        input.get(c);
+        if (c == EOF) {break;}
+        output << c;
+        i += sizeof(c);
+    }
+
+    input.close();
+    output.close();
 }
 
 void compress_file(const char* input_filename, const char* output_filename) {
@@ -114,6 +134,9 @@ vector<pair<int, int>> compress_string(string input) {
         }
 
         output.push_back(value);
+
+        /* debugging */
+        cout << 100.0*((float)i)/((float)input.length()) << " %" << endl;
     }
 
     return output;
