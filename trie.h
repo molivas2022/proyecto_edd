@@ -45,11 +45,14 @@ public:
     ~Trie();
 
     /**
-     * @brief Inserta una palabra en el Trie si no ha sido insertada previamente.
-     * Se asigna un índice único a la palabra basada en el orden de inserción.
+     * @brief Inserta una palabra con un maximo de n carateres en el Trie si no ha sido insertada previamente.
+     * Se asigna un índice único a la palabra igual al start dado (poscición del primer character en la palabra original).
+     * Las palabras son asignadas desde el inicio dado es decir word[start] hasta la cantidad de max_characters elegida.
      * @param word: Palabra a ser añadida al Trie.
+     * @param start: Indice del primer caracter de la palabra a insertar
+     * @param max_characters: máximo de caracteres que puede tener una palabra en el trie.
      */
-    void insert(std::string word);
+    void insert(std::string &word, int start, int max_characters);
 
     /**
      * @brief Busca una palabra en el Trie.
@@ -62,9 +65,10 @@ public:
     bool find(std::string word);
 
     /**
-     * @brief Busca el substring más largo desde el inicio del string dado que coincida con un substring en el Trie.
+     * @brief Busca el substring más largo desde el start dado del string dado que coincida con un substring en el Trie.
      * @param str: El string del cual se quiere encontrar el substring más largo en común dentro del Trie.
+     * @param start: Desde donde buscaremos el match más grande.
      * @note Esta función esta creada especialmente para el caso de uso en la compresión LZ.
      */
-    std::pair<int, int> find_longest_match(std::string str);
+    std::pair<int, int> find_longest_match(std::string &str, int start);
 };

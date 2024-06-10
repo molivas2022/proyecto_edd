@@ -43,11 +43,14 @@ void Trie::delete_subtree(TrieNode *node)
     delete node;
 }
 
-void Trie::insert(std::string word)
+void Trie::insert(std::string &word, int start, int max_characters)
 {
     TrieNode *current_node = root;
 
-    for (std::size_t i = 0; i < word.size(); i++)
+    // En el final de la palabra original se podria pasar de largo, esta para prevenir.
+    std::size_t range_end = std::min((std::size_t)(start + max_characters), word.length());
+
+    for (std::size_t i = start; i < range_end; i++)
     {
         char ch = word[i];
 
@@ -63,10 +66,9 @@ void Trie::insert(std::string word)
         // Cambiamos los indices en todos los characters de la palabra para que sean el mismo número.
         if (current_node->word_index == -1)
         {
-            current_node->word_index = index_count;
+            current_node->word_index = start;
         }
     }
-    index_count++;
 }
 
 bool Trie::find(std::string word)
@@ -89,13 +91,13 @@ bool Trie::find(std::string word)
     return true;
 }
 
-std::pair<int, int> Trie::find_longest_match(std::string str)
+std::pair<int, int> Trie::find_longest_match(std::string &str, int start)
 {
     TrieNode *current_node = root;
     int length = 0;
     int index = -1;
 
-    for (std::size_t i = 0; i < str.size(); i++)
+    for (std::size_t i = start; i < str.length(); i++)
     {
         char ch = str[i];
         // Si el carácter actual no se encuentra en los hijos del nodo actual, se detiene la búsqueda
@@ -110,7 +112,7 @@ std::pair<int, int> Trie::find_longest_match(std::string str)
         if (current_node->word_index != -1)
         {
             index = current_node->word_index;
-            length = i + 1;
+            length = i - start + 1;
         }
     }
 

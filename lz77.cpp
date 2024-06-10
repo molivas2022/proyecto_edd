@@ -44,21 +44,20 @@ vector<pair<int, int>> compress_string(string input)
     int i = 0;
     while (i < input.length())
     {
-        string substring = input.substr(i, input.size());
-        aux = trie.find_longest_match(substring);
+        aux = trie.find_longest_match(input, i);
         int index = aux.first;
         int length = aux.second;
 
-        if (aux.second == 0)
+        if (length == 0)
         {
-            output.emplace_back(substring[0], 0);
-            trie.insert(substring);
+            output.emplace_back((int)input[i], 0);
+            trie.insert(input, i, 255);
             i++;
         }
         else
         {
             output.emplace_back(index, length);
-            trie.insert(substring);
+            trie.insert(input, i, 255);
             i += length;
         }
 
@@ -151,6 +150,7 @@ void print_code(vector<pair<int, int>> code)
 {
     for (int i = 0; i < code.size(); i++)
     {
+        cout << "index: " << i << ", " << "par: ";
         cout << '(';
         if (code[i].second == 0)
         {
@@ -163,6 +163,6 @@ void print_code(vector<pair<int, int>> code)
         cout << ", ";
         cout << code[i].second;
         cout << ")  ";
+        cout << endl;
     }
-    cout << endl;
 }
