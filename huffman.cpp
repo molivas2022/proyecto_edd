@@ -5,7 +5,7 @@
 #include <stack>
 #include <fstream>
 
-const bool _HUFFMAN_DEBUG = 0;
+const bool _HUFFMAN_DEBUG = 1;
 
 /* -- Funciones y estructuras auxiliares -- */
 
@@ -32,13 +32,13 @@ struct nodeComparator {
 };
 
 /* Obtiene las frecuencias de cada caracter en un texto */
-std::unordered_map<char, int> readFrequencies(const std::string&);
+std::unordered_map<char, int> readFrequencies(std::fstream& textfin);
 
 /* Crea nodos hoja del arbol de Huffman a partir del mapa de frecuencias */
 std::priority_queue<Node *, std::vector<Node*>, nodeComparator> createLeaves(const std::unordered_map<char, int>&);
 
 /* Crea el arbol de Huffman a partir de un texto y su mapa de frecuencias */
-Node * createHuffmanTree(std::string, std::unordered_map<char, int>);
+Node * createHuffmanTree(std::unordered_map<char, int> freq);
 
 /* Busca un valor en un arbol binario de Huffman, creando su camino. Recursiva */
 bool searchValue(Node *, char, std::string&);
@@ -48,10 +48,10 @@ std::pair<std::unordered_map<char, std::string>, std::unordered_map<std::string,
 
 /* -- Implementación header -- */
 
-std::string HuffmanCoding::str_encode(std::string text) 
+std::string HuffmanCoding::str_encode(std::fstream& ifs) 
 {
-    auto freq_map = readFrequencies(text);              
-    auto huffman_tree = createHuffmanTree(text, freq_map);
+    auto freq_map = readFrequencies(ifs);           
+    auto huffman_tree = createHuffmanTree(freq_map);
     std::string encoded_msg;
 
     /* Obtiene mapas de codificación y decodificación del texto leído */
@@ -59,49 +59,28 @@ std::string HuffmanCoding::str_encode(std::string text)
     auto coding = dicts.first;
     auto decoding = dicts.second;
 
+    /* Vuelve al inicio del archivo y define un string con el mensaje codificado */
+    ifs.clear();
+    ifs.seekg(0, std::ios::beg);
+    char ch;
+    while (ifs >> std::noskipws >> ch) {
+        encoded_msg += coding[ch];
+    }
+
     /* DEBUGGING PRINT */
     if (_HUFFMAN_DEBUG) {
         for (auto it = coding.begin(); it != coding.end(); it++) {
             auto key = it->first;
             std::cout << "'" << key << "' :     " << coding[key] << std::endl;
         }
-    }
-
-    /* as shrimple as that */
-    for (char c : text) {
-        encoded_msg += coding[c];
+        std::cout << encoded_msg << std::endl;
     }
 
     return encoded_msg;
 }
 
-unsigned char* HuffmanCoding::bit_encode(std::string text) 
-{
-    /* Obtiene la frecuencia de cada caracter del texto */
-    auto freq_map = readFrequencies(text);
-
-    /* Crea el arbol de Huffman del texto */                  
-    auto huffman_tree = createHuffmanTree(text, freq_map);
-
-    /* Obtiene la codificación y decodificación (en mapas) de los caracteres */
-    auto dicts = getMaps(huffman_tree, freq_map);
-    auto coding = dicts.first;
-    auto decoding = dicts.second;
-
-    size_t n_chars = text.length();
-    int encoded_msg_len = 0;
-    std::string encoded_msg;
-
-    /* skibidi biden */
-    for (auto it = coding.begin(); it != coding.end(); it++) {
-        auto key = it->first;
-        encoded_msg_len += ((freq_map.find(key))->second)*((coding[key]).length());
-        std::cout << "'" << key << "' :     " << coding[key] << std::endl;
-    }
-
-    /* Encoding a stream de bits */
-    unsigned char *bitstream = new unsigned char[(encoded_msg_len/CHAR_BIT)+1];
-
+unsigned char* HuffmanCoding::bit_encode(std::string msg) {
+    // todo
 }
 
 /* -- Implementación funciones auxiliares -- */
@@ -111,10 +90,18 @@ Node * combineNodes(Node * node1, Node * node2) {
     return newnode;
 }
 
-std::unordered_map<char, int> readFrequencies(const std::string& str) {
+/* Recibe un stream de archivo de texto del cual extrae las frecuencias de cada char presente en él. Sólo funciona para carácteres ASCII.
+* Parámetros:
+* - textfin: fstream desde el cual se lee el archivo
+*
+* Retorna:
+* - unordered_map, cuyas claves son los carácteres del archivo, y cuyos valores son la frecuencia asociada al carácter dentro del texto.
+*/
+std::unordered_map<char, int> readFrequencies(std::fstream& textfin) {
     std::unordered_map<char, int> counter;
-    for (int i = 0; i < str.size(); i++) {
-        counter[str[i]]++;
+    char ch;
+    while (textfin >> std::noskipws >> ch) {
+        counter[ch]++;
     }
     return counter;
 }
@@ -127,7 +114,7 @@ std::priority_queue<Node *, std::vector<Node*>, nodeComparator> createLeaves(con
     return queue;
 }
 
-Node * createHuffmanTree(std::string str, std::unordered_map<char, int> freq) {
+Node * createHuffmanTree(std::unordered_map<char, int> freq) {
     auto queue = createLeaves(freq);
     while (queue.size() > 1) {
         auto node1 = queue.top(); queue.pop();
