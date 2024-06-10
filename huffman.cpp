@@ -5,7 +5,7 @@
 #include <stack>
 #include <fstream>
 
-const bool _HUFFMAN_DEBUG = 1;
+const bool _HUFFMAN_DEBUG = 0;
 
 /* -- Funciones y estructuras auxiliares -- */
 
@@ -46,6 +46,9 @@ bool searchValue(Node *, char, std::string&);
 /* Crea diccionarios de codificación y decodificación a partir de un arbol de Huffman */
 std::pair<std::unordered_map<char, std::string>, std::unordered_map<std::string, char>> getMaps(Node * huff, std::unordered_map<char, int> map);
 
+/* debugging :33 :3 */
+void printbits(unsigned char v);
+
 /* -- Implementación header -- */
 
 std::string HuffmanCoding::str_encode(std::fstream& ifs) 
@@ -79,8 +82,64 @@ std::string HuffmanCoding::str_encode(std::fstream& ifs)
     return encoded_msg;
 }
 
-unsigned char* HuffmanCoding::bit_encode(std::string msg) {
-    // todo
+unsigned char* HuffmanCoding::bit_encode(std::fstream& ifs) 
+{
+    auto freq_map = readFrequencies(ifs);           
+    auto huffman_tree = createHuffmanTree(freq_map);
+
+    /* Obtiene mapas de codificación y decodificación del texto leído */
+    auto dicts = getMaps(huffman_tree, freq_map);
+    auto coding = dicts.first;
+    auto decoding = dicts.second;
+
+    size_t encoded_msg_len = 0;
+    unsigned char *encoded_msg;
+
+    /* Computar tamaño del mensaje codificado mediante la tabla de frecuencias, luego pedir memoria heap para arreglo de este tamaño. */
+    for (auto it = coding.begin(); it != coding.end(); it++) {
+        char key = it->first;
+        encoded_msg_len += ((freq_map.find(key))->second)*((coding[key]).length());
+    }
+
+    /* Vuelve al inicio del archivo y define un string con el mensaje codificado */
+    ifs.clear();
+    ifs.seekg(0, std::ios::beg);
+
+    encoded_msg = new unsigned char[(encoded_msg_len/8)+1];
+    encoded_msg[0] = (unsigned char)0; // inicializa a 0 para eliminar "basura"
+    int EncMsg_idx = 0;
+    char current_ch; // char del texto original que se esta leyendo
+    int bitflip_pos = 7; // posicion de Izquierda a Derecha (mayor a menor) donde se voltea un bit
+
+    /* me voy a matar ctm (Loop para insertar secuencias de bits en cada byte del arreglo encoded_msg) */
+    while (ifs >> std::noskipws >> current_ch) {
+        std::string encoded_char = (coding[current_ch]);
+
+        for (int i=0; i < encoded_char.length(); i++) {
+            /* cuando un byte del arreglo se llena, incrementar el indice de encoded_msg para asi pasar al siguiente byte */
+            if (bitflip_pos < 0) {
+                EncMsg_idx++;
+                encoded_msg[EncMsg_idx] = (unsigned char)0;
+                bitflip_pos = 7;
+            }
+            /* hacer flip del bit en bitflip_pos (pensando los indices de un byte como decreciendo hacia la derecha) si es que el char codificado posee un 1 en la i-esima posicion*/
+            if (encoded_char[i] == '1') {
+                encoded_msg[EncMsg_idx] |= ((unsigned char)1 << bitflip_pos);
+            }
+            bitflip_pos--;
+        }
+    }
+
+    /* Debugging print */
+    if (_HUFFMAN_DEBUG) {
+        int char_arr_size = (encoded_msg_len/8)+1;
+        std::cout << "char array size: " << char_arr_size << std::endl;
+        for (int i=0; i < (encoded_msg_len/8)+1; i++) {
+            printbits(encoded_msg[i]);
+        }
+    }
+
+    return encoded_msg;
 }
 
 /* -- Implementación funciones auxiliares -- */
@@ -90,7 +149,7 @@ Node * combineNodes(Node * node1, Node * node2) {
     return newnode;
 }
 
-/* Recibe un stream de archivo de texto del cual extrae las frecuencias de cada char presente en él. Sólo funciona para carácteres ASCII.
+/*
 * Parámetros:
 * - textfin: fstream desde el cual se lee el archivo
 *
@@ -177,4 +236,9 @@ void _inOrderTraversal(Node * node, int level) {
 void inOrderTraversal(Node * head) {
     std::cout << "Level\tSymbol\tFrequency" << std::endl;
     _inOrderTraversal(head, 0);
+}
+
+/* debug */
+void printbits(unsigned char v) {
+    for(int i = 7; i >= 0; i--) putchar('0' + ((v >> i) & 1));
 }
