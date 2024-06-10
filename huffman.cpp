@@ -3,6 +3,9 @@
 #include <iostream>
 #include <queue>
 #include <stack>
+#include <fstream>
+
+const bool _HUFFMAN_DEBUG = 0;
 
 /* -- Funciones y estructuras auxiliares -- */
 
@@ -11,6 +14,10 @@ struct Node {
     int frequency;
     Node * left;
     Node * right;
+};
+
+struct BitUdec {
+    unsigned char val : 1;
 };
 
 /* Combina dos nodos como hijos de un nodo padre, */
@@ -41,8 +48,35 @@ std::pair<std::unordered_map<char, std::string>, std::unordered_map<std::string,
 
 /* -- Implementación header -- */
 
-std::string HuffmanCoding::encode(std::string text) {
-    
+std::string HuffmanCoding::str_encode(std::string text) 
+{
+    auto freq_map = readFrequencies(text);              
+    auto huffman_tree = createHuffmanTree(text, freq_map);
+    std::string encoded_msg;
+
+    /* Obtiene mapas de codificación y decodificación del texto leído */
+    auto dicts = getMaps(huffman_tree, freq_map);
+    auto coding = dicts.first;
+    auto decoding = dicts.second;
+
+    /* DEBUGGING PRINT */
+    if (_HUFFMAN_DEBUG) {
+        for (auto it = coding.begin(); it != coding.end(); it++) {
+            auto key = it->first;
+            std::cout << "'" << key << "' :     " << coding[key] << std::endl;
+        }
+    }
+
+    /* as shrimple as that */
+    for (char c : text) {
+        encoded_msg += coding[c];
+    }
+
+    return encoded_msg;
+}
+
+unsigned char* HuffmanCoding::bit_encode(std::string text) 
+{
     /* Obtiene la frecuencia de cada caracter del texto */
     auto freq_map = readFrequencies(text);
 
@@ -54,14 +88,20 @@ std::string HuffmanCoding::encode(std::string text) {
     auto coding = dicts.first;
     auto decoding = dicts.second;
 
+    size_t n_chars = text.length();
+    int encoded_msg_len = 0;
+    std::string encoded_msg;
+
     /* skibidi biden */
     for (auto it = coding.begin(); it != coding.end(); it++) {
-
         auto key = it->first;
+        encoded_msg_len += ((freq_map.find(key))->second)*((coding[key]).length());
         std::cout << "'" << key << "' :     " << coding[key] << std::endl;
     }
 
-    return "TO DO.";
+    /* Encoding a stream de bits */
+    unsigned char *bitstream = new unsigned char[(encoded_msg_len/CHAR_BIT)+1];
+
 }
 
 /* -- Implementación funciones auxiliares -- */
