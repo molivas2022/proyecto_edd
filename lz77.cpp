@@ -98,7 +98,7 @@ void compress_file(const char *input_filename, const char *output_filename)
     auto code = compress_string(str);
 
     /* debugging */
-    int size = code.size() * 2 * sizeof(int);
+    int size = code.size() * (sizeof(int) + sizeof(int));
     float in_kb = ((float)(size)) / 1000.0;
     cout << in_kb << " kB" << endl;
 
