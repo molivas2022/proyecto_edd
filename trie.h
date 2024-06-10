@@ -12,11 +12,7 @@ struct TrieNode
     int word_index;
     std::unordered_map<char, TrieNode *> childs;
 
-    /**
-     * Constructor del nodo Trie.
-     * Inicializa el nodo con un caracter 'ch' y establece el índice de la palabra en -1.
-     */
-    TrieNode(char ch);
+    TrieNode(char c);
 };
 
 /**
@@ -26,8 +22,14 @@ struct TrieNode
  */
 class Trie
 {
-    TrieNode *root;
-    int index_count;
+    TrieNode *root;  // Raiz del árbol
+    int index_count; // Índice que lleva en la cuanta, este empieza en 0 e incrementa en cada inserción en 1
+
+    /**
+     * @brief Elimina todo el sub-arbol que tiene como raiz a node recursivamente.
+     * @param node: nodo desde el cual se eliminara el sub-arbol
+     */
+    void delete_subtree(TrieNode *node);
 
 public:
     /**
