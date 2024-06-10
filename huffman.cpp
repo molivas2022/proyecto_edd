@@ -92,10 +92,8 @@ unsigned char* HuffmanCoding::bit_encode(std::fstream& ifs)
     auto coding = dicts.first;
     auto decoding = dicts.second;
 
-    size_t encoded_msg_len = 0;
-    unsigned char *encoded_msg;
-
     /* Computar tamaño del mensaje codificado mediante la tabla de frecuencias, luego pedir memoria heap para arreglo de este tamaño. */
+    size_t encoded_msg_len = 0;
     for (auto it = coding.begin(); it != coding.end(); it++) {
         char key = it->first;
         encoded_msg_len += ((freq_map.find(key))->second)*((coding[key]).length());
@@ -105,10 +103,18 @@ unsigned char* HuffmanCoding::bit_encode(std::fstream& ifs)
     ifs.clear();
     ifs.seekg(0, std::ios::beg);
 
-    encoded_msg = new unsigned char[(encoded_msg_len/8)+1];
+    /* Para guardar los caracteres codificados, modificamos cada byte de un arreglo de unsigned char ``encoded_msg``, que tiene suficiente espacio para llenar el texto codificado completo */
+    unsigned char* encoded_msg;
+
+    /* Si por suerte el largo del mensaje codificado es un multiplo de 8, entonces guardamos la cantidad exacta de bits */
+    if (encoded_msg_len % 8 == 0)
+        encoded_msg = new unsigned char[(encoded_msg_len/8)]; 
+    else
+        encoded_msg = new unsigned char[(encoded_msg_len/8)+1];
+    
     encoded_msg[0] = (unsigned char)0; // inicializa a 0 para eliminar "basura"
     int EncMsg_idx = 0;
-    char current_ch; // char del texto original que se esta leyendo
+    char current_ch; // char del texto original que se está leyendo
     int bitflip_pos = 7; // posicion de Izquierda a Derecha (mayor a menor) donde se voltea un bit
 
     /* me voy a matar ctm (Loop para insertar secuencias de bits en cada byte del arreglo encoded_msg) */
