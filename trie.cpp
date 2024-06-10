@@ -1,162 +1,113 @@
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 #include <string>
 
 /**
  * Referencias: https://www.geeksforgeeks.org/trie-insert-and-search/
  */
 
-/**
- * Estructura que representa un nodo dentro de un Trie.
- * Cada nodo puede contiene:
- * - Un caracter.
- * - Un índice que indica si el nodo marca el final de una palabra insertada.
- *   - Si el índice es -1, el nodo no representa el final de una palabra.
- *   - Si el índice es un número mayor o igual a 0, el nodo es el final de una palabra y el valor es su índice.
- * - Una lista de nodos hijos 'childs', que pueden ser todos los caracteres posibles (hasta 255 en ASCII).
- */
 struct TrieNode
 {
     char ch;
     int word_index;
-    std::vector<TrieNode *> childs;
+    // Pensandolo bien quizas es mejor utilizar un unordered map en esto, por la velocidad
+    std::unordered_map<char, TrieNode *> childs;
 
-    /**
-     * Constructor del nodo Trie.
-     * Inicializa el nodo con un caracter 'ch' y establece el índice de la palabra en -1.
-     */
     TrieNode(char ch)
     {
         this->ch = ch;
         this->word_index = -1;
     }
-
-    /**
-     * @brief Busca entre los hijos del nodo actual por un nodo con el caracter 'c'.
-     * @param c: Caracter del nodo hijo que se está buscando.
-     * @return Puntero al nodo hijo si existe, o un puntero nulo si no.
-     */
-    TrieNode *get_child(char c)
-    {
-        if (!childs.empty())
-        {
-            for (TrieNode *child : childs)
-            {
-                if (child->ch == c)
-                {
-                    return child;
-                }
-            }
-        }
-        return nullptr; // No se encontró un hijo con el caracter 'c'.
-    }
 };
 
-/**
- * Clase que representa un árbol Trie para almacenar cadenas de texto.
- * Las cadenas insertadas se les asigna un índice basado en el orden de inserción.
- */
 class Trie
 {
     TrieNode *root;      //< Nodo raíz del Trie.
     int index_count = 0; //< Contador de índices, aumenta con cada palabra insertada.
 
 public:
-    /**
-     * Constructor del Trie.
-     * Inicializa el Trie con un nodo raíz vacío.
-     */
     Trie()
     {
         root = new TrieNode('\0');
     }
 
-    /**
-     * Destructor del Trie.
-     * Libera la memoria de todos los nodos del Trie.
-     */
     ~Trie()
     {
-        delete_nodes(root);
+        // AQUI HABRIA QUE PONER UN DESTRUCTOOOOOR (TOMANDO EN CUENTA EL UNORDEREDMAP)
     }
 
-    /**
-     * @brief Inserta una palabra en el Trie si no ha sido insertada previamente.
-     * Se asigna un índice único a la palabra basada en el orden de inserción.
-     * @param word: Palabra a ser añadida al Trie.
-     */
     void insert(std::string word)
     {
         TrieNode *current_node = root;
-        for (char c : word)
+
+        for (std::size_t i = 0; i < word.size(); i++)
         {
-            TrieNode *aux = current_node->get_child(c);
-            if (aux)
+            char ch = word[i];
+
+            // si no se encuentra ningun nodo con este character, se crea uno nuevo
+            if (current_node->childs.find(ch) == current_node->childs.end())
             {
-                current_node = aux;
+                current_node->childs[ch] = new TrieNode(ch);
             }
-            else
+
+            // Accedemos al nodo hijo que tiene el character o que creamos creado
+            current_node = current_node->childs[ch];
+
+            // Cambiamos los indices en todos los characters de la palabra para que sean el mismo número.
+            if (current_node->word_index == -1)
             {
-                TrieNode *new_node = new TrieNode(c);
-                current_node->childs.push_back(new_node);
-                current_node = new_node;
+                current_node->word_index = index_count;
             }
         }
-        if (current_node->word_index == -1) // Solo asigna índice si el nodo no tiene uno.
-            current_node->word_index = index_count++;
+        index_count++;
     }
 
-    /**
-     * @brief Busca una palabra en el Trie.
-     * Si la palabra existe, devuelve su índice, de lo contrario, devuelve -1.
-     * @param word: Palabra a buscar en el Trie.
-     * @return Índice de la palabra o -1 si no se encuentra.
-     */
-    int find(std::string word)
+    bool find(std::string word)
     {
         TrieNode *current_node = root;
 
-        for (char c : word)
+        for (std::size_t i = 0; i < word.size(); i++)
         {
-            if (current_node->get_child(c) == nullptr)
-            {
-                return -1;
-            }
-            else
-            {
-                current_node = current_node->get_child(c);
-            }
-        }
+            char ch = word[i];
 
-        return current_node->word_index;
+            // Si no existe un nodo con el character, no está la palabra.
+            if (current_node->childs.find(ch) == current_node->childs.end())
+            {
+                return false;
+            }
+            // Cambiamos a un hijo del nodo actual
+            current_node = current_node->childs[ch];
+        }
+        // Si siempre se encontro un character, entonces la palabra esta insertada en el Trie
+        return true;
     }
 
-private:
-    /**
-     * @brief Función recursiva que elimina todos los nodos en un subárbol a partir de un nodo raíz.
-     * @param node: Puntero al nodo raíz del subárbol a eliminar.
-     */
-    void delete_nodes(TrieNode *node)
+    std::pair<int, int> find_longest_match(std::string str)
     {
-        if (node == nullptr)
+        TrieNode *current_node = root;
+        int length = 0;
+        int index = -1;
+
+        for (std::size_t i = 0; i < str.size(); i++)
         {
-            return;
+            char ch = str[i];
+            // Si el carácter actual no se encuentra en los hijos del nodo actual, se detiene la búsqueda
+            if (current_node->childs.find(ch) == current_node->childs.end())
+            {
+                break;
+            }
+            // Si el carácter actual se encuentra en el Trie, actualiza el nodo current.
+            current_node = current_node->childs[ch];
+
+            // se actualizan el índice y la longitud de la coincidencia
+            if (current_node->word_index != -1)
+            {
+                index = current_node->word_index;
+                length = i + 1;
+            }
         }
-        for (TrieNode *child : node->childs)
-        {
-            delete_nodes(child);
-        }
-        delete node;
+
+        return std::pair<int, int>(index, length);
     }
 };
-
-int main()
-{
-    Trie test_trie = Trie();
-
-    test_trie.insert("hola");
-    std::cout << test_trie.find("hola") << std::endl;
-    test_trie.insert("ho");
-    std::cout << test_trie.find("ho") << std::endl;
-    return 0;
-}
