@@ -49,10 +49,10 @@ public:
      * Se asigna un índice único a la palabra igual al start dado (poscición del primer character en la palabra original).
      * Las palabras son asignadas desde el inicio dado es decir word[start] hasta la cantidad de max_characters elegida.
      * @param word: Palabra a ser añadida al Trie.
-     * @param start: Indice del primer caracter de la palabra a insertar
-     * @param max_characters: máximo de caracteres que puede tener una palabra en el trie.
+     * @param start: Indice del primer caracter de la palabra a insertar.
+     * @param end: Indice del ultimo caracter de la palabra a insertar.
      */
-    void insert(std::string &word, int start, int max_characters);
+    void insert(std::string &word, int start, int end);
 
     /**
      * @brief Busca una palabra en el Trie.

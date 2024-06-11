@@ -43,12 +43,12 @@ void Trie::delete_subtree(TrieNode *node)
     delete node;
 }
 
-void Trie::insert(std::string &word, int start, int max_characters)
+void Trie::insert(std::string &word, int start, int end)
 {
     TrieNode *current_node = root;
 
     // En el final de la palabra original se podria pasar de largo, esta para prevenir.
-    std::size_t range_end = std::min((std::size_t)(start + max_characters), word.length());
+    std::size_t range_end = std::min((std::size_t)(end), word.length());
 
     for (std::size_t i = start; i < range_end; i++)
     {
