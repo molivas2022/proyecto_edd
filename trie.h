@@ -70,5 +70,5 @@ public:
      * @param start: Desde donde buscaremos el match más grande.
      * @note Esta función esta creada especialmente para el caso de uso en la compresión LZ.
      */
-    std::pair<int, int> find_longest_match(std::string &str, int start);
+    std::pair<int, char> find_longest_match(std::string &str, int start);
 };

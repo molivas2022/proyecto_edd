@@ -30,15 +30,15 @@ void cut_file(int size, const char *input_filename, const char *output_filename)
 }
 
 /* Fuente: https://en.wikipedia.org/wiki/LZ77_and_LZ78#LZ77 */
-vector<pair<int, int>> compress_string(string input)
+vector<pair<int, char>> compress_string(string input)
 {
     /* Variables */
-    vector<pair<int, int>> output;
+    vector<pair<int, char>> output;
     Trie trie;
     int MAX_BUFFER = 32;
     int search_buffer_left = 0;
 
-    pair<int, int> aux;
+    pair<int, char> aux;
 
     /* Loop */
     int input_index = 0;
@@ -59,7 +59,7 @@ vector<pair<int, int>> compress_string(string input)
         // Si el match más largo es 0, entonces es una palabar nunca vista, guardamos (char,0)
         if (length == 0)
         {
-            output.emplace_back((int)input[input_index], 0);
+            output.emplace_back((int)input[input_index], (char)0);
 
             // Además guardamos en el trie todos los suffix que se pueden generar de la palabra que está en el
             // search buffer
@@ -73,7 +73,7 @@ vector<pair<int, int>> compress_string(string input)
         else
         {
             // Si el match es mayor que 0, añadimos el par (index, length)
-            output.emplace_back(index, length);
+            output.emplace_back(index, (char)length);
 
             // Además guardamos en el trie todos los suffix que se pueden generar de la palabra que está en el
             // search buffer
@@ -93,7 +93,7 @@ vector<pair<int, int>> compress_string(string input)
     return output;
 }
 
-string decompress_string(vector<pair<int, int>> input)
+string decompress_string(vector<pair<int, char>> input)
 {
     string output;
 
@@ -113,15 +113,15 @@ string decompress_string(vector<pair<int, int>> input)
         else
         {
             // Si el lenght mayor a 0, entonces añadimos el subtring que va desde index hasta index + length
-            if (output.length() >= code.first + code.second)
+            if (output.length() >= code.first + (int)code.second)
             {
-                output.append(output.substr(code.first, code.second));
+                output.append(output.substr(code.first, (int)code.second));
             }
             else
             {
                 // Si por alguna razón la compresión esta mal hecha, rompemos el programa y
                 // mostramos el par en donde hay un error
-                cout << "hubo un error con: (" << code.first << ", " << code.second << ")" << endl;
+                cout << "hubo un error con: (" << code.first << ", " << (int)code.second << ")" << endl;
                 break;
             }
         }
@@ -149,7 +149,7 @@ void compress_file(const char *input_filename, const char *output_filename)
     for (int i = 0; i < code.size(); i++)
     {
         output.write((char *)&(code[i].first), sizeof(int));
-        output.write((char *)&(code[i].second), sizeof(int));
+        output.write((char *)&(code[i].second), sizeof(char));
     }
 
     input.close();
@@ -163,8 +163,8 @@ void decompress_file(const char *input_filename, const char *output_filename)
     {
         /* debugging */ cout << "Oh oh!" << endl;
     }
-    vector<pair<int, int>> vec;
-    pair<int, int> value;
+    vector<pair<int, char>> vec;
+    pair<int, char> value;
     while (true)
     {
         if (input.peek() != EOF)
@@ -172,7 +172,7 @@ void decompress_file(const char *input_filename, const char *output_filename)
             input.read((char *)&value.first, sizeof(int));
             if (input.peek() != EOF)
             {
-                input.read((char *)&value.second, sizeof(int));
+                input.read((char *)&value.second, sizeof(char));
                 vec.push_back(value);
                 continue;
             }
@@ -189,7 +189,7 @@ void decompress_file(const char *input_filename, const char *output_filename)
     output.close();
 }
 
-void print_code(vector<pair<int, int>> code)
+void print_code(vector<pair<int, char>> code)
 {
     for (int i = 0; i < code.size(); i++)
     {
@@ -204,7 +204,7 @@ void print_code(vector<pair<int, int>> code)
             cout << code[i].first;
         }
         cout << ", ";
-        cout << code[i].second;
+        cout << (int)code[i].second;
         cout << ")  ";
         cout << endl;
     }

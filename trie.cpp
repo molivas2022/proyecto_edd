@@ -91,7 +91,7 @@ bool Trie::find(std::string word)
     return true;
 }
 
-std::pair<int, int> Trie::find_longest_match(std::string &str, int start)
+std::pair<int, char> Trie::find_longest_match(std::string &str, int start)
 {
     TrieNode *current_node = root;
     int length = 0;

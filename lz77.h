@@ -30,14 +30,14 @@ void decompress_file(const char *input_filename, const char *output_filename);
  * @param input: string a comprimir.
  * @return Vector con pares de compresión LZ77.
  */
-vector<pair<int, int>> compress_string(string input);
+vector<pair<int, char>> compress_string(string input);
 
 /**
  * @brief Devuelve un string descomprimido, dado su compresión como un vector de pares de indice-longitud.
  * @param input: Vector con pares de compresión LZ77.
  * @return String descomprimido.
  */
-string decompress_string(vector<pair<int, int>> input);
+string decompress_string(vector<pair<int, char>> input);
 
 /* -- Funciones de depuración -- */
 
@@ -45,7 +45,7 @@ string decompress_string(vector<pair<int, int>> input);
 void cut_file(int size, const char *input_filename, const char *output_filename);
 
 /* Imprime los pares indice-longitud de una compresión */
-void print_code(vector<pair<int, int>> code);
+void print_code(vector<pair<int, char>> code);
 
 // Fuente: Chat GPT ;)
 void compararArchivos(const std::string &archivo1, const std::string &archivo2);
