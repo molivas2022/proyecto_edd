@@ -14,6 +14,7 @@ int main()
     compress_file("sample_cut.txt", "sample_compressed.txt");
     decompress_file("sample_compressed.txt", "sample_decompressed.txt");
     /* Notar que sample_cut.txt y sample_decompressed.txt son identicos */
+    compararArchivos("sample_cut.txt", "sample_decompressed.txt");
 
     return 0;
 }

@@ -48,6 +48,11 @@ vector<pair<int, int>> compress_string(string input)
         int index = aux.first;
         int length = aux.second;
 
+        if (index + length > i)
+        {
+            length = i;
+        }
+
         if (length == 0)
         {
             output.emplace_back((int)input[i], 0);
@@ -82,7 +87,14 @@ string decompress_string(vector<pair<int, int>> input)
         }
         else
         {
-            output.append(output.substr(code.first, code.second));
+            if (output.length() >= code.first + code.second)
+            {
+                output.append(output.substr(code.first, code.second));
+            }
+            else
+            {
+                cout << "hubo un error con: (" << code.first << ", " << code.second << ")" << endl;
+            }
         }
     }
     return output;
@@ -165,4 +177,50 @@ void print_code(vector<pair<int, int>> code)
         cout << ")  ";
         cout << endl;
     }
+}
+
+// Fuente: Chat GPT >.<
+void compararArchivos(const std::string &archivo1, const std::string &archivo2)
+{
+    std::ifstream file1(archivo1);
+    std::ifstream file2(archivo2);
+
+    if (!file1.is_open() || !file2.is_open())
+    {
+        std::cerr << "Error al abrir los archivos." << std::endl;
+        return;
+    }
+
+    std::string lineaArchivo1, lineaArchivo2;
+    bool sonIguales = true;
+
+    while (std::getline(file1, lineaArchivo1) && std::getline(file2, lineaArchivo2))
+    {
+        if (lineaArchivo1 != lineaArchivo2)
+        {
+            sonIguales = false;
+            break;
+        }
+    }
+
+    // Verificar si uno de los archivos tiene más líneas que el otro
+    if (sonIguales)
+    {
+        if ((file1.eof() && !file2.eof()) || (!file1.eof() && file2.eof()))
+        {
+            sonIguales = false;
+        }
+    }
+
+    if (sonIguales)
+    {
+        std::cout << "son iguales" << std::endl;
+    }
+    else
+    {
+        std::cout << "wuawuawuawuaaaaaaaaa" << std::endl;
+    }
+
+    file1.close();
+    file2.close();
 }

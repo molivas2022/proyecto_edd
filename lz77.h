@@ -22,3 +22,6 @@ pair<string, int> longest_repeated_ocurrence(string search, string look);
 void cut_file(int size, const char *input_filename, const char *output_filename);
 /* Imprime los pares indice-longitud de una compresión */
 void print_code(vector<pair<int, int>> code);
+
+// Fuente: Chat GPT ;)
+void compararArchivos(const std::string &archivo1, const std::string &archivo2);
