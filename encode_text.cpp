@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <cstring>
 
 /* -- Funciones principales -- */
 void encode_file(const char* input_filename, const char* output_filename);
@@ -15,13 +16,16 @@ void decode_file(const char* input_filename, const char* output_filename);
 *       g++ encode_text.cpp huffman_tree.cpp huffman_coding.cpp serialization.cpp -I headers/ -Wall -Wextra -o encode_text
 */
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cout << "Uso del programa: ./ejecutable <path de .txt a codificar>" << std::endl;
+    if (argc != 4) {
+        std::cout << "Uso del programa: ./ejecutable <operacion> <path a archivo de entrada> <nombre de archivo de salida>" << std::endl;
         exit(EXIT_FAILURE);
     }
-    encode_file(argv[1], "compressed");
-    decode_file("compressed", "decompressed.txt");
-
+    if (strcmp(argv[1],"encode") == 0) {
+        encode_file(argv[2], argv[3]);
+    }
+    else if (strcmp(argv[1],"decode") == 0) {
+        decode_file(argv[2], argv[3]);
+    }
     return 0;
 }
 
