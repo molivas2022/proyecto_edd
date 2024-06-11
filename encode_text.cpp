@@ -17,6 +17,7 @@ void decode_file(const char* input_filename, const char* output_filename);
 */
 int main(int argc, char** argv) {
     encode_file(argv[1], "compressed");
+    decode_file("compressed", "decompressed.txt");
 
     return 0;
 }
@@ -25,7 +26,6 @@ void encode_file(const char* input_filename, const char* output_filename) {
     std::fstream ifs(input_filename, std::fstream::in);
 
     HuffmanCoding hc;
-    HuffmanFileHandler hfs;
 
     auto code = hc.bit_encode(ifs);
     ifs.clear(); ifs.seekg(0, std::ios::beg);
@@ -45,5 +45,20 @@ void encode_file(const char* input_filename, const char* output_filename) {
 }
 
 void decode_file(const char* input_filename, const char* output_filename) {
-    std::cout << "TO-DO >.<" << std::endl;
+    std::fstream ifs(input_filename, std::fstream::in | std::ios::binary);
+
+    auto freq = unserialize_freq(ifs);
+    auto root = createHuffmanTree(freq);
+    auto code = unserialize_huffmancode(ifs);
+
+    HuffmanCoding hc;
+
+    auto decode = hc.bit_decode(code.second, code.first, root);
+
+    std::fstream ofs{output_filename, std::fstream::out};
+    ofs << decode;
+
+    ifs.close();
+    ofs.close();
+    delete code.second;
 }

@@ -3,6 +3,13 @@
 #include <string>
 #include <unordered_map>
 
+struct Node {
+    char symbol;
+    int frequency;
+    Node * left;
+    Node * right;
+};
+
 /* Permite codificar y decodificar un texto según la codificación de Huffman */
 /* Almacena el arbol de codificación de sólo el último texto codifcado */
 class HuffmanCoding {

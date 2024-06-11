@@ -9,13 +9,6 @@ const bool _HUFFMAN_DEBUG = 0;
 
 /* -- Funciones y estructuras auxiliares -- */
 
-struct Node {
-    char symbol;
-    int frequency;
-    Node * left;
-    Node * right;
-};
-
 struct BitUdec {
     unsigned char val : 1;
 };
