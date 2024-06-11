@@ -10,6 +10,6 @@ class HuffmanCoding {
     std::unordered_map<std::string, char> decoding; /* llave = codigo huffman, valor = ascii char */
 public:
     std::string str_encode(std::fstream&);
-    unsigned char* bit_encode(std::fstream&);
+    std::pair<unsigned int, unsigned char*> bit_encode(std::fstream&);
     std::string bit_decode(unsigned char*, size_t, Node*);
 };
