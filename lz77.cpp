@@ -35,39 +35,56 @@ vector<pair<int, int>> compress_string(string input)
     /* Variables */
     vector<pair<int, int>> output;
     Trie trie;
+    int MAX_BUFFER = 255;
+    int search_buffer_left = 0;
     // Esto esta dado por:
     // first: index
     // second: length
     pair<int, int> aux;
 
     /* Loop */
-    int i = 0;
-    while (i < input.length())
+    int input_index = 0;
+    while (input_index < input.length())
     {
-        aux = trie.find_longest_match(input, i);
+        // Esto sirve para mantener siempre lo siguiente:
+
+        if (input_index - search_buffer_left > 255)
+        {
+            search_buffer_left = input_index - MAX_BUFFER;
+        }
+
+        aux = trie.find_longest_match(input, input_index);
         int index = aux.first;
         int length = aux.second;
 
-        if (index + length > i)
-        {
-            length = i;
-        }
-
         if (length == 0)
         {
-            output.emplace_back((int)input[i], 0);
-            trie.insert(input, i, 255);
-            i++;
+            output.emplace_back((int)input[input_index], 0);
+
+            for (int i = search_buffer_left; i < input_index; i++)
+            {
+                trie.insert(input, i, input_index - i);
+            }
+
+            input_index++;
         }
         else
         {
             output.emplace_back(index, length);
-            trie.insert(input, i, 255);
-            i += length;
+
+            for (int i = search_buffer_left; i < input_index; i++)
+            {
+                trie.insert(input, i, input_index - i);
+            }
+
+            input_index += length;
         }
 
+        // Insertamos las palabras desde el limite inferior, hasta el inferior
+
         /* debugging */
-        cout << 100.0 * ((float)i) / ((float)input.length()) << " %" << endl;
+        cout
+            << 100.0 * ((float)input_index) / ((float)input.length()) << " %" << endl;
     }
 
     return output;
