@@ -1,10 +1,10 @@
-#include "huffman.h"
-#include "huffman.cpp"
+#include "huffman_serialization.h"
 
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
-void serialize_huffmancode(std::fstream& output, const unsigned int& number_of_bits, unsigned char * code) {
+void Huffman::IOS::serialize_huffmancode(std::fstream& output, const unsigned int& number_of_bits, unsigned char * code) {
     /* Escribimos el número de bits */
     output.write((char*)&number_of_bits, sizeof(unsigned int));
 
@@ -21,7 +21,7 @@ void serialize_huffmancode(std::fstream& output, const unsigned int& number_of_b
     output.write((char *)code, sizeof(unsigned char)*len);
 }
 
-std::pair<unsigned int, unsigned char*> unserialize_huffmancode(std::fstream& input) {
+std::pair<unsigned int, unsigned char*> Huffman::IOS::unserialize_huffmancode(std::fstream& input) {
     /* Leemos el numero de bits */
     unsigned int number_of_bits;
     input.read((char*)&number_of_bits, sizeof(unsigned int));
@@ -39,11 +39,11 @@ std::pair<unsigned int, unsigned char*> unserialize_huffmancode(std::fstream& in
     unsigned char * code = new unsigned char[len];
     input.read((char *)code, sizeof(unsigned char)*len);
 
-    return std::make_pair(len, code);
+    return std::make_pair(number_of_bits, code);
 }
 
 /* Escribimos el mapa de frecuencias en el binario */
-void serialize_freq(std::fstream& output, std::unordered_map<char, int>& freq) {
+void Huffman::IOS::serialize_freq(std::fstream& output, std::unordered_map<char, int>& freq) {
     /* Escribimos el tamaño del mapa */
     int size = freq.size();
     output.write((char*)&size, sizeof(int));
@@ -56,7 +56,7 @@ void serialize_freq(std::fstream& output, std::unordered_map<char, int>& freq) {
 }
 
 /* Obtenemos el mapa de frecuencias a partir del binario */
-std::unordered_map<char, int> unserialize_freq(std::fstream& input) {
+std::unordered_map<char, int> Huffman::IOS::unserialize_freq(std::fstream& input) {
     /* Obtenemos el tamaño del mapa */
     int size;
     input.read((char*)&size, sizeof(int));
