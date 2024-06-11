@@ -148,6 +148,42 @@ std::pair<unsigned int, unsigned char*> HuffmanCoding::bit_encode(std::fstream& 
     return std::make_pair((unsigned int)encoded_msg_len, encoded_msg);
 }
 
+/* 0 = left, 1 = right
+*/
+std::string HuffmanCoding::bit_decode(unsigned char* encoded_msg, size_t n_bits, Node* tree_head) 
+{
+    int EncMsg_idx = 0;
+    std::string RetStr;
+
+    Node* current_node = tree_head;
+    int bit_pos = 7;
+    for (size_t i=0; i < n_bits; i++) {
+        /* Comprueba si se llegó al limite del BYTE que se está leyendo en encoded_msg */
+        if (bit_pos < 0) {
+            EncMsg_idx++;
+            bit_pos = 7;
+        }
+        /* Comprueba si el BIT leído es 0, en tal caso viaja al hijo izquierdo */
+        if ((encoded_msg[EncMsg_idx] & ((unsigned char)1 << bit_pos)) == (unsigned char)0) {
+            Node* left_child = current_node->left;
+            current_node = left_child;
+        }
+        /* En caso contrario al anterior (1), viaja al hijo derecho */
+        else {
+            Node* right_child = current_node->right;
+            current_node = right_child;
+        }
+        /* Si uno de los dos hijos de current_node es nullptr, es un nodo hoja (carácter) */
+        if (current_node->left == nullptr || current_node->right == nullptr) {
+            RetStr += current_node->symbol;
+            current_node = tree_head;
+        }
+        bit_pos--;
+    }
+
+    return RetStr;
+}
+
 /* -- Implementación funciones auxiliares -- */
 
 Node * combineNodes(Node * node1, Node * node2) {

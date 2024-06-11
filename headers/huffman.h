@@ -11,5 +11,5 @@ class HuffmanCoding {
 public:
     std::string str_encode(std::fstream&);
     std::pair<unsigned int, unsigned char*> bit_encode(std::fstream&);
-    std::string decode(std::string);
+    std::string bit_decode(unsigned char*, size_t, Node*);
 };
