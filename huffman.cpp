@@ -82,7 +82,7 @@ std::string HuffmanCoding::str_encode(std::fstream& ifs)
     return encoded_msg;
 }
 
-unsigned char* HuffmanCoding::bit_encode(std::fstream& ifs) 
+std::pair<unsigned int, unsigned char*> HuffmanCoding::bit_encode(std::fstream& ifs) 
 {
     auto freq_map = readFrequencies(ifs);           
     auto huffman_tree = createHuffmanTree(freq_map);
@@ -145,7 +145,7 @@ unsigned char* HuffmanCoding::bit_encode(std::fstream& ifs)
         }
     }
 
-    return encoded_msg;
+    return std::make_pair((unsigned int)encoded_msg_len, encoded_msg);
 }
 
 /* -- Implementación funciones auxiliares -- */

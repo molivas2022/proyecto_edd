@@ -4,8 +4,46 @@
 #include <iostream>
 #include <fstream>
 
+void serialize_huffmancode(std::fstream& output, const unsigned int& number_of_bits, unsigned char * code) {
+    /* Escribimos el número de bits */
+    output.write((char*)&number_of_bits, sizeof(unsigned int));
+
+    /* Calculamos el tamaño de la secuencia */
+    unsigned int len;
+    if (number_of_bits % 8 == 0) {
+        len =  number_of_bits/8;
+    }
+    else {
+        len =  (number_of_bits/8) + 1;
+    }
+
+    /* Escribimos la secuencia */
+    output.write((char *)code, sizeof(unsigned char)*len);
+}
+
+std::pair<unsigned int, unsigned char*> unserialize_huffmancode(std::fstream& input) {
+    /* Leemos el numero de bits */
+    unsigned int number_of_bits;
+    input.read((char*)&number_of_bits, sizeof(unsigned int));
+
+    /* Calculamos el tamaño de la secuencia */
+    unsigned int len;
+    if (number_of_bits % 8 == 0) {
+        len =  number_of_bits/8;
+    }
+    else {
+        len =  (number_of_bits/8) + 1;
+    }
+
+    /* Escribimos la secuencia */
+    unsigned char * code = new unsigned char[len];
+    input.read((char *)code, sizeof(unsigned char)*len);
+
+    return std::make_pair(len, code);
+}
+
 /* Escribimos el mapa de frecuencias en el binario */
-void serialize_freq(std::ofstream& output, std::unordered_map<char, int>& freq) {
+void serialize_freq(std::fstream& output, std::unordered_map<char, int>& freq) {
     /* Escribimos el tamaño del mapa */
     int size = freq.size();
     output.write((char*)&size, sizeof(int));
@@ -18,7 +56,7 @@ void serialize_freq(std::ofstream& output, std::unordered_map<char, int>& freq) 
 }
 
 /* Obtenemos el mapa de frecuencias a partir del binario */
-std::unordered_map<char, int> unserialize_freq(std::ifstream& input) {
+std::unordered_map<char, int> unserialize_freq(std::fstream& input) {
     /* Obtenemos el tamaño del mapa */
     int size;
     input.read((char*)&size, sizeof(int));
@@ -34,28 +72,4 @@ std::unordered_map<char, int> unserialize_freq(std::ifstream& input) {
     }
 
     return freq;
-}
-
-/* Ejemplo de uso */
-int test() {
-    auto pre_freq = readFrequencies("ababdaaaacbacab");
-    for (auto const& pair: pre_freq) {
-        std::cout << pair.first << '\t' << pair.second << std::endl;
-    }
-    
-    std::ofstream write{"test", std::ios::binary};
-    serialize_freq(write, pre_freq);
-    write.close();
-
-    std::ifstream read{"test", std::ios::binary};
-    auto post_freq = unserialize_freq(read);
-    read.close();
-
-    std::cout << std::endl;
-
-    for (auto const& pair: post_freq) {
-        std::cout << pair.first << '\t' << pair.second << std::endl;
-    }
-
-    return 0;
 }
