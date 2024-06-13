@@ -46,7 +46,7 @@ void encode_file(const char* input_filename, const char* output_filename) {
 
     ifs.close();
     ofs.close();
-    delete encoded_bits;
+    delete[] encoded_bits;
 }
 
 void decode_file(const char* input_filename, const char* output_filename) {
@@ -63,5 +63,5 @@ void decode_file(const char* input_filename, const char* output_filename) {
 
     ifs.close();
     ofs.close();
-    delete code.second;
+    delete[] code.second;
 }

@@ -43,6 +43,16 @@ std::string Huffman::str_encode(std::fstream& ifs)
     return encoded_msg;
 }
 
+/* Codifica un texto leido desde input file stream utilizando un std::unordered_map para transformar carácteres a secuencias de bits.
+*
+* Parameters:
+*   - std::fstream&: Objeto con un archivo de texto ya cargado que se desea codificar.
+*
+* Return:
+*   - std::pair<unsigned int, unsigned char*>: Par que contiene, respectivamente, el largo de la cadena codificada, y un arreglo de memoria dinámica cuyos bytes contienen la cadena
+*
+* !! DEBE LLAMARSE ``delete`` sobre el bitstream del mensaje codificado por quien sea que llame esta función !!
+*/
 std::pair<unsigned int,unsigned char*> Huffman::bit_encode(std::fstream& ifs) 
 {
     auto freq_map = readFrequencies(ifs);           
@@ -78,7 +88,7 @@ std::pair<unsigned int,unsigned char*> Huffman::bit_encode(std::fstream& ifs)
     char current_ch; // char del texto original que se está leyendo
     int bitflip_pos = 7; // posicion de Izquierda a Derecha (mayor a menor) donde se voltea un bit
 
-    /* me voy a matar ctm (Loop para insertar secuencias de bits en cada byte del arreglo encoded_msg) */
+    /* Loop para insertar secuencias de bits en cada byte del arreglo encoded_msg */
     while (ifs >> std::noskipws >> current_ch) {
         std::string encoded_char = (coding[current_ch]);
 
