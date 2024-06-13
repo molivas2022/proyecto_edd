@@ -3,31 +3,10 @@
 #include <fstream>
 #include <sstream>
 
-#include "lz77.h"
-#include "trie.h"
+#include "lz77_compression.h"
+#include "lz77_trie.h"
+
 using namespace std; /* >.< */
-
-void cut_file(int size, const char *input_filename, const char *output_filename)
-{
-    ifstream input{input_filename};
-    ofstream output{output_filename};
-
-    int i = 0;
-    char c;
-    while (i < size)
-    {
-        input.get(c);
-        if (c == EOF)
-        {
-            break;
-        }
-        output << c;
-        i += sizeof(c);
-    }
-
-    input.close();
-    output.close();
-}
 
 /* Fuente: https://en.wikipedia.org/wiki/LZ77_and_LZ78#LZ77 */
 vector<pair<int, char>> compress_string(string input)
@@ -129,66 +108,6 @@ string decompress_string(vector<pair<int, char>> input)
     return output;
 }
 
-void compress_file(const char *input_filename, const char *output_filename)
-{
-    ifstream input{input_filename};
-    stringstream buffer;
-    buffer << input.rdbuf();
-    string str = buffer.str();
-
-    auto code = compress_string(str);
-
-    print_code(code);
-
-    /* debugging */
-    int size = code.size() * (sizeof(int) + sizeof(char));
-    float in_kb = ((float)(size)) / 1000.0;
-    cout << in_kb << " kB" << endl;
-
-    ofstream output{output_filename, ios::binary};
-    for (int i = 0; i < code.size(); i++)
-    {
-        output.write((char *)&(code[i].first), sizeof(int));
-        output.write((char *)&(code[i].second), sizeof(char));
-    }
-
-    input.close();
-    output.close();
-}
-
-void decompress_file(const char *input_filename, const char *output_filename)
-{
-    ifstream input{input_filename, ios::binary};
-    if (!input.is_open())
-    {
-        /* debugging */ cout << "Oh oh!" << endl;
-    }
-    vector<pair<int, char>> vec;
-    pair<int, char> value;
-    while (true)
-    {
-        if (input.peek() != EOF)
-        {
-            input.read((char *)&value.first, sizeof(int));
-            if (input.peek() != EOF)
-            {
-                input.read((char *)&value.second, sizeof(char));
-                vec.push_back(value);
-                continue;
-            }
-        }
-        break;
-    }
-
-    auto decode = decompress_string(vec);
-
-    ofstream output{output_filename};
-    output << decode;
-
-    input.close();
-    output.close();
-}
-
 void print_code(vector<pair<int, char>> code)
 {
     for (int i = 0; i < code.size(); i++)
@@ -208,50 +127,4 @@ void print_code(vector<pair<int, char>> code)
         cout << ")  ";
         cout << endl;
     }
-}
-
-// Fuente: Chat GPT >.<
-void compararArchivos(const std::string &archivo1, const std::string &archivo2)
-{
-    std::ifstream file1(archivo1);
-    std::ifstream file2(archivo2);
-
-    if (!file1.is_open() || !file2.is_open())
-    {
-        std::cerr << "Error al abrir los archivos." << std::endl;
-        return;
-    }
-
-    std::string lineaArchivo1, lineaArchivo2;
-    bool sonIguales = true;
-
-    while (std::getline(file1, lineaArchivo1) && std::getline(file2, lineaArchivo2))
-    {
-        if (lineaArchivo1 != lineaArchivo2)
-        {
-            sonIguales = false;
-            break;
-        }
-    }
-
-    // Verificar si uno de los archivos tiene más líneas que el otro
-    if (sonIguales)
-    {
-        if ((file1.eof() && !file2.eof()) || (!file1.eof() && file2.eof()))
-        {
-            sonIguales = false;
-        }
-    }
-
-    if (sonIguales)
-    {
-        std::cout << "son iguales" << std::endl;
-    }
-    else
-    {
-        std::cout << "wuawuawuawuaaaaaaaaa" << std::endl;
-    }
-
-    file1.close();
-    file2.close();
 }

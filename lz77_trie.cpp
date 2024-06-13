@@ -1,4 +1,4 @@
-#include "trie.h"
+#include "lz77_trie.h"
 
 #include <iostream>
 #include <unordered_map>

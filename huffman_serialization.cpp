@@ -1,8 +1,47 @@
 #include "huffman_serialization.h"
+#include "huffman_coding.h"
+#include "huffman_tree.h"
 
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+
+void encode_file(const char* input_filename, const char* output_filename) {
+    std::fstream ifs(input_filename, std::fstream::in);
+
+    auto code = Huffman::bit_encode(ifs);
+    ifs.clear(); ifs.seekg(0, std::ios::beg);
+    auto freq = Huffman::readFrequencies(ifs);  
+
+    unsigned int code_length = code.first;
+    unsigned char* encoded_bits = code.second;
+
+    std::fstream ofs{output_filename, std::fstream::out | std::ios::binary};
+
+    Huffman::IOS::serialize_freq(ofs, freq);
+    Huffman::IOS::serialize_huffmancode(ofs, code_length, encoded_bits);
+
+    ifs.close();
+    ofs.close();
+    delete encoded_bits;
+}
+
+void decode_file(const char* input_filename, const char* output_filename) {
+    std::fstream ifs(input_filename, std::fstream::in | std::ios::binary);
+
+    auto freq = Huffman::IOS::unserialize_freq(ifs);
+    auto root = Huffman::createHuffmanTree(freq);
+    auto code = Huffman::IOS::unserialize_huffmancode(ifs);
+
+    auto decode = Huffman::bit_decode(code.second, code.first, root);
+
+    std::fstream ofs{output_filename, std::fstream::out};
+    ofs << decode;
+
+    ifs.close();
+    ofs.close();
+    delete code.second;
+}
 
 void Huffman::IOS::serialize_huffmancode(std::fstream& output, const unsigned int& number_of_bits, unsigned char * code) {
     /* Escribimos el número de bits */

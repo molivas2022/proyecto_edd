@@ -5,7 +5,9 @@
 #ifndef HUFFMAN_SERIAL_H
 #define HUFFMAN_SERIAL_H
 
-/* que haras al respecto, matias */
+/* -- Funciones principales -- */
+void encode_file(const char* input_filename, const char* output_filename);
+void decode_file(const char* input_filename, const char* output_filename);
 
 namespace Huffman {
     namespace IOS {
