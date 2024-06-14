@@ -78,11 +78,11 @@ string decompress_string(vector<pair<int, char>> input)
 
     // OJO: los pares estan guardados como (index, lenght)
 
-    while (input.size() > 0)
+    int size = input.size();
+    for (int i = 0; i < size; i++)
     {
         // recuperamos el primer par y lo guardamos en code.
-        auto code = input[0];
-        input.erase(input.begin());
+        auto code = input[i];
 
         if (code.second == 0)
         {
