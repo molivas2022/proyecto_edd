@@ -7,16 +7,14 @@
 
 using namespace std; /* >.< */
 
-void compress_file(const char *input_filename, const char *output_filename)
+void compress_file(const char *input_filename, const char *output_filename, int MAX_BUFFER = 16, int MEMORY_LIMIT = -1)
 {
     ifstream input{input_filename};
     stringstream buffer;
     buffer << input.rdbuf();
     string str = buffer.str();
 
-    auto code = compress_string(str);
-
-    print_code(code);
+    auto code = compress_string(str, MAX_BUFFER, MEMORY_LIMIT);
 
     /* debugging */
     int size = code.size() * (sizeof(int) + sizeof(char));

@@ -9,12 +9,12 @@
 using namespace std; /* >.< */
 
 /* Fuente: https://en.wikipedia.org/wiki/LZ77_and_LZ78#LZ77 */
-vector<pair<int, char>> compress_string(string input)
+vector<pair<int, char>> compress_string(string input, int MAX_BUFFER = 16, int MEMORY_LIMIT = -1)
 {
     /* Variables */
     vector<pair<int, char>> output;
     Trie trie;
-    int MAX_BUFFER = 32;
+    int TRIE_NODE_SIZE = 129;
     int search_buffer_left = 0;
 
     pair<int, char> aux;
@@ -23,6 +23,13 @@ vector<pair<int, char>> compress_string(string input)
     int input_index = 0;
     while (input_index < input.length())
     {
+        // Si nos pasamos de la memoria limite, limpiamos el arbol
+        if (0 < MEMORY_LIMIT && (trie.get_size() * TRIE_NODE_SIZE) / 1000 > MEMORY_LIMIT)
+        {
+            trie.clear();
+        }
+        /* code */
+
         // Si la direfencia entre el límite inferior y el superior sobrepasa el máximo,
         // se recalcula el límite inferior
         if (input_index - search_buffer_left > MAX_BUFFER)
@@ -104,6 +111,7 @@ string decompress_string(vector<pair<int, char>> input)
                 break;
             }
         }
+        cout << 100.0 * ((float)i) / ((float)size) << " %" << endl;
     }
     return output;
 }

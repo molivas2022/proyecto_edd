@@ -26,7 +26,7 @@ TrieNode::TrieNode(char c)
 Trie::Trie()
 {
     root = new TrieNode('\0');
-    index_count = 0;
+    size = 0;
 }
 
 Trie::~Trie()
@@ -36,7 +36,7 @@ Trie::~Trie()
 
 void Trie::delete_subtree(TrieNode *node)
 {
-    for (auto child : node->childs)
+    for (auto &child : node->childs)
     {
         delete_subtree(child.second);
     }
@@ -58,6 +58,7 @@ void Trie::insert(std::string &word, int start, int end)
         if (current_node->childs.find(ch) == current_node->childs.end())
         {
             current_node->childs[ch] = new TrieNode(ch);
+            size++;
         }
 
         // Accedemos al nodo hijo que tiene el character o que creamos creado
@@ -118,3 +119,11 @@ std::pair<int, char> Trie::find_longest_match(std::string &str, int start)
 
     return std::pair<int, int>(index, length);
 }
+
+int Trie::get_size() { return size; }
+
+void Trie::clear()
+{
+    delete_subtree(root);
+    root = new TrieNode('\0');
+};

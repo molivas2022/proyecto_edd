@@ -8,9 +8,11 @@
  */
 struct TrieNode
 {
-    char ch;
-    int word_index;
-    std::unordered_map<char, TrieNode *> childs;
+    char ch;                                     // 1 byte
+    int word_index;                              // 4 bytes
+    std::unordered_map<char, TrieNode *> childs; // 124 bytes (minimo)
+
+    // Un trieNode pesa minimo 129 bytes
 
     TrieNode(char c);
 };
@@ -22,8 +24,8 @@ struct TrieNode
  */
 class Trie
 {
-    TrieNode *root;  // Raiz del árbol
-    int index_count; // Índice que lleva en la cuanta, este empieza en 0 e incrementa en cada inserción en 1
+    TrieNode *root; // Raiz del árbol
+    int size;       // Índice que lleva en la cuanta, este empieza en 0 e incrementa en cada inserción en 1
 
     /**
      * @brief Elimina todo el sub-arbol que tiene como raiz a node recursivamente.
@@ -71,4 +73,8 @@ public:
      * @note Esta función esta creada especialmente para el caso de uso en la compresión LZ.
      */
     std::pair<int, char> find_longest_match(std::string &str, int start);
+
+    int get_size();
+
+    void clear();
 };
