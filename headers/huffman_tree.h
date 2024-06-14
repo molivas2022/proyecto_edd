@@ -20,15 +20,22 @@ namespace Huffman
         Node * right;
     };
 
-    /* Clase comparativa: Criterio de comparación, frecuencias */
+    /* Clase comparativa: Devuelve verdadero si node1 es "mayor" que node2 */
+    /* Criterios de comparación: Frecuencia -> Simbolo -> Hijo izquierdo -> Hijo derecho -> Son iguales */
     /* Importante (Solución parche): Debe ser una relación de orden total */
     struct nodeComparator {
         bool operator()(const Node * node1, const Node * node2) const {
+            if (node1 && !node2) return true;
+            if (!node1) return false;
             if (node1->frequency == node2->frequency) {
                 if (node1->symbol == node2->symbol) {
-                    if (node1->left) node1 = node1->left;
-                    if (node2->left) node2 = node2->left;
-                    return nodeComparator::operator()(node1, node2);
+                    /* Se comparan los hijos izquierdos */
+                    auto left = nodeComparator()(node1->left, node2->left);
+                    auto inv_left = nodeComparator()(node2->left, node1->left);
+                    if (left != inv_left) return left;
+
+                    /* Se comparan los hijos derechos */
+                    return nodeComparator()(node1->right, node2->right);
                 }
                 return node1->symbol > node2->symbol;
             }

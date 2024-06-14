@@ -7,10 +7,13 @@
 
 using namespace Huffman;
 
+/* Caracter por defecto asignado a nodos NO hojas en el arbol de huffman */
+const char DEFAULT_CHARACTER = '~'; /* No implica que sea un caracter ilegal */
+
 Node* Huffman::LastSavedTree = nullptr;
 
 Node * Huffman::combineNodes(Node * node1, Node * node2) {
-    Node * newnode = new Node{'~', node1->frequency + node2->frequency, node1, node2};
+    Node * newnode = new Node{DEFAULT_CHARACTER, node1->frequency + node2->frequency, node1, node2};
     return newnode;
 }
 
@@ -54,7 +57,8 @@ bool Huffman::searchValue(Node * node, char target, std::string& path) {
         return false;
     }
     if (node->symbol == target) {
-        return true;
+        /* Debemos asegurarnos que es un nodo hoja */
+        if (!(node->left) && !(node->right)) return true;
     }
 
     /* Left */
