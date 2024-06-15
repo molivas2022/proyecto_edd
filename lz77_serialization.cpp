@@ -7,7 +7,7 @@
 
 using namespace std; /* >.< */
 
-void compress_file(const char *input_filename, const char *output_filename, int MAX_BUFFER = 16, int MEMORY_LIMIT = -1)
+void compress_file(const char *input_filename, const char *output_filename, int MAX_BUFFER = 16, size_t MEMORY_LIMIT = -1)
 {
     ifstream input{input_filename};
     stringstream buffer;
@@ -15,11 +15,6 @@ void compress_file(const char *input_filename, const char *output_filename, int 
     string str = buffer.str();
 
     auto code = compress_string(str, MAX_BUFFER, MEMORY_LIMIT);
-
-    /* debugging */
-    int size = code.size() * (sizeof(int) + sizeof(char));
-    float in_kb = ((float)(size)) / 1000.0;
-    cout << in_kb << " kB" << endl;
 
     ofstream output{output_filename, ios::binary};
     for (int i = 0; i < code.size(); i++)

@@ -11,7 +11,7 @@
  * si es igual a -1 (por defecto), no hay limite de memoria.
  * @return Nuevo archivo con la compresión aplicada con el nombre 'output_filename'
  */
-void compress_file(const char *input_filename, const char *output_filename, int MAX_BUFFER, int MEMORY_LIMI);
+void compress_file(const char *input_filename, const char *output_filename, int MAX_BUFFER, size_t MEMORY_LIMI);
 
 /**
  *  @brief Descomprime un archivo input, creando un archivo output. La compresión de este archivo tiene que ser

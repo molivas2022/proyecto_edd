@@ -5,9 +5,7 @@
 #include <iostream>
 #include <cstring>
 
-/* Durante ejecución, recibe como único parámetro un archivo de texto el cual codificar mediante árbol de Huffman
- *
- *   Compilación:
+/* Compilación:
  *       g++ main.cpp huffman_tree.cpp huffman_coding.cpp huffman_serialization.cpp lz77_trie.cpp lz77_compression.cpp lz77_serialization.cpp -I headers/ -Wall -Wextra -o main
  */
 int main(int argc, char **argv)
@@ -28,7 +26,7 @@ int main(int argc, char **argv)
     }
     else if (strcmp(argv[1], "compress") == 0)
     {
-        compress_file(argv[2], argv[3], 16, 1000);
+        compress_file(argv[2], argv[3], 24, (size_t)8*(size_t)1024*(size_t)1024*(size_t)1024);
     }
     else if (strcmp(argv[1], "decompress") == 0)
     {

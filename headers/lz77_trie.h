@@ -25,7 +25,7 @@ struct TrieNode
 class Trie
 {
     TrieNode *root; // Raiz del árbol
-    int size;       // Índice que lleva en la cuanta, este empieza en 0 e incrementa en cada inserción en 1
+    size_t size;       // Índice que lleva en la cuanta, este empieza en 0 e incrementa en cada inserción en 1
 
     /**
      * @brief Elimina todo el sub-arbol que tiene como raiz a node recursivamente.
@@ -74,7 +74,7 @@ public:
      */
     std::pair<int, char> find_longest_match(std::string &str, int start);
 
-    int get_size();
+    size_t get_size();
 
     void clear();
 };

@@ -23,7 +23,7 @@ void encode_file(const char* input_filename, const char* output_filename) {
 
     ifs.close();
     ofs.close();
-    delete encoded_bits;
+    delete[] encoded_bits;
 }
 
 void decode_file(const char* input_filename, const char* output_filename) {
@@ -40,7 +40,7 @@ void decode_file(const char* input_filename, const char* output_filename) {
 
     ifs.close();
     ofs.close();
-    delete code.second;
+    delete[] code.second;
 }
 
 void Huffman::IOS::serialize_huffmancode(std::fstream& output, const unsigned int& number_of_bits, unsigned char * code) {
@@ -99,7 +99,7 @@ std::unordered_map<char, int> Huffman::IOS::unserialize_freq(std::fstream& input
     /* Obtenemos el tamaño del mapa */
     int size;
     input.read((char*)&size, sizeof(int));
-    std::unordered_map<char, int> freq{size};
+    std::unordered_map<char, int> freq{(size_t)size};
 
     /* Obtenemos cada par clave-valor */
     char key;
