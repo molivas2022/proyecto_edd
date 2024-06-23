@@ -12,7 +12,7 @@ using namespace std; /* >.< */
  * si es igual a -1 (por defecto), no hay limite de memoria.
  * @return Vector con pares de compresión LZ77.
  */
-vector<pair<int, char>> compress_string(string input, int MAX_BUFFER, int MEMORY_LIMIT);
+vector<pair<int, char>> compress_string(string input, int MAX_BUFFER, size_t MEMORY_LIMIT);
 
 /**
  * @brief Devuelve un string descomprimido, dado su compresión como un vector de pares de indice-longitud.

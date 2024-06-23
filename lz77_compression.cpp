@@ -8,25 +8,30 @@
 
 using namespace std; /* >.< */
 
+const bool _LZ77_CODING_DEBUG = 0;
+const bool _MEMORY_UNLOCKED = 0;
+
 /* Fuente: https://en.wikipedia.org/wiki/LZ77_and_LZ78#LZ77 */
-vector<pair<int, char>> compress_string(string input, int MAX_BUFFER = 16, int MEMORY_LIMIT = -1)
+vector<pair<int, char>> compress_string(string input, int MAX_BUFFER = 16, size_t MEMORY_LIMIT = -1)
 {
     /* Variables */
     vector<pair<int, char>> output;
     Trie trie;
-    int TRIE_NODE_SIZE = 129;
+    size_t TRIE_NODE_SIZE = 129;
     int search_buffer_left = 0;
 
     pair<int, char> aux;
 
     /* Loop */
     int input_index = 0;
+    bool is_trie_full = false;
     while (input_index < input.length())
     {
         // Si nos pasamos de la memoria limite, limpiamos el arbol
-        if (0 < MEMORY_LIMIT && (trie.get_size() * TRIE_NODE_SIZE) / 1000 > MEMORY_LIMIT)
+        if (!_MEMORY_UNLOCKED && (trie.get_size() * TRIE_NODE_SIZE) > MEMORY_LIMIT)
         {
-            trie.clear();
+            if (_LZ77_CODING_DEBUG) cout << "tree is full" << endl;
+            is_trie_full = true;
         }
         /* code */
 
@@ -49,9 +54,11 @@ vector<pair<int, char>> compress_string(string input, int MAX_BUFFER = 16, int M
 
             // Además guardamos en el trie todos los suffix que se pueden generar de la palabra que está en el
             // search buffer
-            for (int i = search_buffer_left; i < input_index; i++)
-            {
-                trie.insert(input, i, input_index);
+            if (!is_trie_full) {
+                for (int i = search_buffer_left; i < input_index; i++)
+                {
+                    trie.insert(input, i, input_index);
+                }
             }
             // avanzamos en el string al siguiente character
             input_index++;
@@ -63,9 +70,11 @@ vector<pair<int, char>> compress_string(string input, int MAX_BUFFER = 16, int M
 
             // Además guardamos en el trie todos los suffix que se pueden generar de la palabra que está en el
             // search buffer
-            for (int i = search_buffer_left; i < input_index; i++)
-            {
-                trie.insert(input, i, input_index);
+            if (!is_trie_full) {
+                for (int i = search_buffer_left; i < input_index; i++)
+                {
+                    trie.insert(input, i, input_index);
+                }
             }
 
             // avanzamos en el string la la cantidad de characters que hicieron match.
@@ -73,7 +82,7 @@ vector<pair<int, char>> compress_string(string input, int MAX_BUFFER = 16, int M
         }
 
         /* debugging */
-        cout << 100.0 * ((float)input_index) / ((float)input.length()) << " %" << endl;
+        if (_LZ77_CODING_DEBUG) cout << 100.0 * ((float)input_index) / ((float)input.length()) << " %" << endl;
     }
 
     return output;
@@ -107,11 +116,11 @@ string decompress_string(vector<pair<int, char>> input)
             {
                 // Si por alguna razón la compresión esta mal hecha, rompemos el programa y
                 // mostramos el par en donde hay un error
-                cout << "hubo un error con: (" << code.first << ", " << (int)code.second << ")" << endl;
+                if (_LZ77_CODING_DEBUG) cout << "hubo un error con: (" << code.first << ", " << (int)code.second << ")" << endl;
                 break;
             }
         }
-        cout << 100.0 * ((float)i) / ((float)size) << " %" << endl;
+        if (_LZ77_CODING_DEBUG) cout << 100.0 * ((float)i) / ((float)size) << " %" << endl;
     }
     return output;
 }

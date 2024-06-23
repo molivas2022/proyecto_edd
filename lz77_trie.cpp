@@ -31,7 +31,7 @@ Trie::Trie()
 
 Trie::~Trie()
 {
-    delete_subtree(root);
+    /* el pepe estuvo acá */ //delete_subtree(root);
 }
 
 void Trie::delete_subtree(TrieNode *node)
@@ -120,10 +120,11 @@ std::pair<int, char> Trie::find_longest_match(std::string &str, int start)
     return std::pair<int, int>(index, length);
 }
 
-int Trie::get_size() { return size; }
+size_t Trie::get_size() { return size; }
 
 void Trie::clear()
 {
     delete_subtree(root);
+    size = 0;
     root = new TrieNode('\0');
 };
