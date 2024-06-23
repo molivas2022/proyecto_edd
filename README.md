@@ -13,5 +13,5 @@ Instrucciones de ejecución:
 ```
 El ejecutable necesita tres argumentos:
 - ``<operacion>`` tiene cuatro opciones disponibles: encode, decode, compress y decompress. Encode y decode utilizan el método de Huffman, mientras que compress y decompress utilizan compresión LZ.
-- ``<path al archivo de entrada>`` es el path relativo al archivo de texto que se desea comprimir.
+- ``<path al archivo de entrada>`` es el path relativo al archivo de texto que se desea comprimir o descomprimir.
 - ``<nombre del archivo de salida>`` es el nombre del archivo binario de salida (si se utilizó encode/compress) o del archivo de texto de salida (si se utilizó decode/decompress) 
