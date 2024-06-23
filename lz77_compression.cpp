@@ -27,7 +27,7 @@ vector<pair<int, char>> compress_string(string input, int MAX_BUFFER = 16, size_
     bool is_trie_full = false;
     while (input_index < input.length())
     {
-        // Si nos pasamos de la memoria limite, limpiamos el arbol
+        // Si nos pasamos de la memoria limite, No insertamos más palabras al arbol
         if (!_MEMORY_UNLOCKED && (trie.get_size() * TRIE_NODE_SIZE) > MEMORY_LIMIT)
         {
             if (_LZ77_CODING_DEBUG) cout << "tree is full" << endl;
