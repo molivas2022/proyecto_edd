@@ -4,7 +4,7 @@ Programa para comprimir o descomprimir archivos de texto mediante el algoritmo d
 
 Instrucciones de compilación:
 ```
-g++ main.cpp huffman_tree.cpp huffman_coding.cpp huffman_serialization.cpp lz77_trie.cpp lz77_compression.cpp lz77_serialization.cpp -I headers/ -Wall -Wextra -o main
+g++ main.cpp huffman_tree.cpp huffman_coding.cpp huffman_serialization.cpp lz77_trie.cpp lz77_compression.cpp lz77_serialization.cpp -I headers/ -o main
 ```
 
 Instrucciones de ejecución:
