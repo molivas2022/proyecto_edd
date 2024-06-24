@@ -26,6 +26,7 @@ public:
     double now();
 };
 
+/* Devuelve el tamaño del archivo */
 std::streampos getFileSize(const std::string& fileName);
 
 /* -- Test --*/
@@ -59,7 +60,7 @@ int main(int argc, char **argv)
 
     else if (strcmp(argv[2], "compress") == 0) {
         c.lap();
-        compress_file(argv[1], "compressed", 24, (size_t)8*(size_t)1024*(size_t)1024*(size_t)1024);
+        compress_file(argv[1], "compressed");
         auto compression_time = c.lap();
         auto compression_size = getFileSize("compressed");
 
@@ -98,13 +99,13 @@ double Clock::now() {
 }
 
 std::streampos getFileSize(const std::string& fileName) {
-    std::ifstream file(fileName, std::ios::binary | std::ios::ate); // Open file at the end
+    std::ifstream file(fileName, std::ios::binary | std::ios::ate); /* abre el archivo al final */
     if (file.is_open()) {
-        std::streampos size = file.tellg(); // Get position of the end of the file (file size)
+        std::streampos size = file.tellg(); /* y lee la posición del archivo al final, corresponde al tamaño del archivo */
         file.close();
         return size;
     } else {
         std::cerr << "Failed to open the file.\n";
-        return -1; // Return -1 if the file couldn't be opened
+        return -1; /* devuelve -1 si el archivo no se abrió */
     }
 }

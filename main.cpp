@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     }
     else if (strcmp(argv[1], "compress") == 0)
     {
-        compress_file(argv[2], argv[3], 24, (size_t)8*(size_t)1024*(size_t)1024*(size_t)1024);
+        compress_file(argv[2], argv[3]);
     }
     else if (strcmp(argv[1], "decompress") == 0)
     {

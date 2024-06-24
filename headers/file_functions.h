@@ -4,8 +4,10 @@
 #include <fstream>
 #include <string>
 
-/* Recorta el tamaño de un archivo de texto a un tamaño deseado (en bytes) */
+/**
+ * @brief Recorta el tamaño de un archivo de texto a un tamaño deseado (en bytes).
+ * @param size: tamaño deseado.
+ * @param input_filename: nombre del archivo de entrada.
+ * @param output_filename: nombre del archivo de salida.
+ */
 void cut_file(size_t size, const char *input_filename, const char *output_filename);
-
-/* Compara dos archivos e imprime un mensaje confirmando si contienen exactamente la misma información */
-void compare_file(const char* &archivo1, const char* &archivo2);

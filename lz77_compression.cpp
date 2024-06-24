@@ -8,10 +8,9 @@
 
 using namespace std; /* >.< */
 
-const bool _LZ77_CODING_DEBUG = 0;
-const bool _MEMORY_UNLOCKED = 0;
+const bool _LZ77_CODING_DEBUG = 0; /* Modo de depuración */
+const bool _MEMORY_UNLOCKED = 0; /* Eliminar el bloqueo de memoria del Trie */
 
-/* Fuente: https://en.wikipedia.org/wiki/LZ77_and_LZ78#LZ77 */
 vector<pair<int, char>> compress_string(string input, int MAX_BUFFER = 16, size_t MEMORY_LIMIT = -1)
 {
     /* Variables */

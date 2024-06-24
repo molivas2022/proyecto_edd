@@ -13,7 +13,7 @@ const char DEFAULT_CHARACTER = '~'; /* No implica que sea un caracter ilegal */
 Node* Huffman::LastSavedTree = nullptr;
 
 Node * Huffman::combineNodes(Node * node1, Node * node2) {
-    Node * newnode = new Node{DEFAULT_CHARACTER, node1->frequency + node2->frequency, node1, node2};
+    Node * newnode = new Node{DEFAULT_CHARACTER, node1->frequency + node2->frequency, node1, node2}; /* Crea el nodo padre */
     return newnode;
 }
 
@@ -27,63 +27,63 @@ Node * Huffman::combineNodes(Node * node1, Node * node2) {
 std::unordered_map<char, int> Huffman::readFrequencies(std::fstream& textfin) {
     std::unordered_map<char, int> counter;
     char ch;
-    while (textfin >> std::noskipws >> ch) {
-        counter[ch]++;
+    while (textfin >> std::noskipws >> ch) { /* Leemos cada caracter */
+        counter[ch]++; /* Y sumamos en su frecuencia */
     }
     return counter;
 }
 
-std::priority_queue<Node *, std::vector<Node*>, nodeComparator> Huffman::createLeaves(const std::unordered_map<char, int>& map) {
+std::priority_queue<Node *, std::vector<Node*>, nodeComparator> Huffman::createLeaves(const std::unordered_map<char, int>& freq) {
     std::priority_queue<Node *, std::vector<Node*>, nodeComparator> queue;
-    for (std::pair<char, int> pair: map) {
+    for (std::pair<char, int> pair: freq) {
         queue.push(new Node{pair.first, pair.second, nullptr, nullptr});
     }
     return queue;
 }
 
 Node * Huffman::createHuffmanTree(std::unordered_map<char, int> freq) {
-    auto queue = createLeaves(freq);
+    auto queue = createLeaves(freq); /* Obtenemos todos los nodos hoja */
     while (queue.size() > 1) {
         auto node1 = queue.top(); queue.pop();
         auto node2 = queue.top(); queue.pop();
-        queue.push(combineNodes(node1, node2));
+        queue.push(combineNodes(node1, node2)); /* Combinamos los dos nodos de mayor prioridad */
     }
-    LastSavedTree = queue.top();
+    LastSavedTree = queue.top(); /* Ultimo arbol */
     return queue.top(); /* Head */
 }
 
 bool Huffman::searchValue(Node * node, char target, std::string& path) {
     if (!node) {
-        return false;
+        return false; /* Llegamos al final sin encontrar nada en este camino */
     }
     if (node->symbol == target) {
         /* Debemos asegurarnos que es un nodo hoja */
         if (!(node->left) && !(node->right)) return true;
     }
 
-    /* Left */
+    /* Probamos con avanzar por el subárbol izquierdo */
     path.push_back('0');
     bool cond1 = searchValue(node->left, target, path);
-    if (cond1) {return true;}
-    path.pop_back();
+    if (cond1) {return true; /* En caso de ser el camino correcto */}
+    path.pop_back(); /* En caso de que no */
     
-    /* Right */
+    /* Probamos con avanzar por el subárbol derecho */
     path.push_back('1');
     bool cond2 = searchValue(node->right, target, path);
-    if (cond2) {return true;}
-    path.pop_back();
+    if (cond2) {return true; /* En caso de ser el camino correcto */}
+    path.pop_back(); /* En caso de que no */
 
     return false;
 }
 
 std::pair<std::unordered_map<char, std::string>, std::unordered_map<std::string, char>> Huffman::getMaps(Node * huff, std::unordered_map<char, int> map) {
-    std::unordered_map<char, std::string> code;
-    std::unordered_map<std::string, char> decode;
+    std::unordered_map<char, std::string> code; /* mapa de codificación */
+    std::unordered_map<std::string, char> decode; /* mapa de decodificación */
 
-    for (auto it = map.begin(); it != map.end(); it++) {
+    for (auto it = map.begin(); it != map.end(); it++) { /* leemos todos los caracteres distintos */
         auto key = it->first;
         std::string path;
-        if (!searchValue(huff, key, path)) {
+        if (!searchValue(huff, key, path)) { /* y buscamos su camino en el árbol de Huffman -> codificación Huffman */
             exit(EXIT_FAILURE); /* Siempre deberia encontrar un camino */
         }
         code.insert({key, path});
@@ -91,19 +91,4 @@ std::pair<std::unordered_map<char, std::string>, std::unordered_map<std::string,
     }
 
     return std::make_pair(code, decode);
-}
-
-/* -- Deprecated -- */
-
-void _inOrderTraversal(Node * node, int level) {
-    if (node != nullptr) {
-            _inOrderTraversal(node->left, level + 1);
-            std::cout << level << "\t" << node->symbol << "\t" << node->frequency << std::endl;
-            _inOrderTraversal(node->right, level + 1);
-        }
-}
-
-void inOrderTraversal(Node * head) {
-    std::cout << "Level\tSymbol\tFrequency" << std::endl;
-    _inOrderTraversal(head, 0);
 }

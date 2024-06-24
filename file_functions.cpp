@@ -2,19 +2,19 @@
 
 void cut_file(int size, const char *input_filename, const char *output_filename)
 {
-    std::ifstream input{input_filename};
-    std::ofstream output{output_filename};
+    std::ifstream input{input_filename}; /* entrada */
+    std::ofstream output{output_filename}; /* salida */
 
     int i = 0;
     char c;
-    while (i < size)
+    while (i < size) /* lee hasta el limite */
     {
-        input.get(c);
+        input.get(c); /* entrada */
         if (c == EOF)
         {
             break;
         }
-        output << c;
+        output << c; /* salida */
         i += sizeof(c);
     }
 

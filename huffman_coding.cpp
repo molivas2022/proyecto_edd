@@ -6,7 +6,7 @@
 
 using namespace Huffman;
 
-const bool _HUFFMAN_CODING_DEBUG = 0;
+const bool _HUFFMAN_CODING_DEBUG = 0; /* Modo de depuración */
 size_t Huffman::LastSavedSize = 0;
 
 /* debugging :33 :3 */

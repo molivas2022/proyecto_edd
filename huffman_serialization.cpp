@@ -7,19 +7,19 @@
 #include <unordered_map>
 
 void encode_file(const char* input_filename, const char* output_filename) {
-    std::fstream ifs(input_filename, std::fstream::in);
+    std::fstream ifs(input_filename, std::fstream::in); /* abrimos el archivo de texto */
 
-    auto code = Huffman::bit_encode(ifs);
-    ifs.clear(); ifs.seekg(0, std::ios::beg);
-    auto freq = Huffman::readFrequencies(ifs);  
+    auto code = Huffman::bit_encode(ifs); /* obtenemos el codigo de huffman del texto*/
+    ifs.clear(); ifs.seekg(0, std::ios::beg); /* movemos el cursor de lectura al inicio */
+    auto freq = Huffman::readFrequencies(ifs);  /* leemos frecuencias */
 
     unsigned int code_length = code.first;
     unsigned char* encoded_bits = code.second;
 
     std::fstream ofs{output_filename, std::fstream::out | std::ios::binary};
 
-    Huffman::IOS::serialize_freq(ofs, freq);
-    Huffman::IOS::serialize_huffmancode(ofs, code_length, encoded_bits);
+    Huffman::IOS::serialize_freq(ofs, freq); /* escribimos las frecuencias */
+    Huffman::IOS::serialize_huffmancode(ofs, code_length, encoded_bits); /* escribimos el codigo de huffman */
 
     ifs.close();
     ofs.close();
@@ -27,16 +27,16 @@ void encode_file(const char* input_filename, const char* output_filename) {
 }
 
 void decode_file(const char* input_filename, const char* output_filename) {
-    std::fstream ifs(input_filename, std::fstream::in | std::ios::binary);
+    std::fstream ifs(input_filename, std::fstream::in | std::ios::binary); /* abrimos el archivo codificado */
 
-    auto freq = Huffman::IOS::unserialize_freq(ifs);
-    auto root = Huffman::createHuffmanTree(freq);
-    auto code = Huffman::IOS::unserialize_huffmancode(ifs);
+    auto freq = Huffman::IOS::unserialize_freq(ifs); /* obtenemos las frecuencias */
+    auto root = Huffman::createHuffmanTree(freq); /* creamos el arbol a partir de las frecuencias */
+    auto code = Huffman::IOS::unserialize_huffmancode(ifs); /* obtenemos el codigo de Huffman */
 
-    auto decode = Huffman::bit_decode(code.second, code.first, root);
+    auto decode = Huffman::bit_decode(code.second, code.first, root); /* decodificamos el codigo de Huffman */
 
     std::fstream ofs{output_filename, std::fstream::out};
-    ofs << decode;
+    ofs << decode; /* escribimos el texto decodificado */
 
     ifs.close();
     ofs.close();
